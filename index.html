@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="card">
+        <div class="search">
+            <input type="text" placeholder="Enter city name" spellcheck="false">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+        
+        <div class="weather-loading">
+            <div class="loader"></div>
+        </div>
+        
+        <div class="weather">
+            <div class="weather-icon-container">
+                <img src="https://openweathermap.org/img/wn/02d@2x.png" class="weather-icon">
+            </div>
+            <h1 class="temp">22°C</h1>
+            <h2 class="city">New York</h2>
+            <p class="weather-description">Partly cloudy</p>
+        </div>
+        
+        <div class="details">
+            <div class="detail-item">
+                <i class="fas fa-wind"></i>
+                <div>
+                    <p class="wind-speed">15 km/h</p>
+                    <p>Wind Speed</p>
+                </div>
+            </div>
+            
+            <div class="detail-item">
+                <i class="fas fa-tint"></i>
+                <div>
+                    <p class="humidity-percent">50%</p>
+                    <p>Humidity</p>
+                </div>
+            </div>
+            
+            <div class="detail-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <div>
+                    <p class="pressure">1012 hPa</p>
+                    <p>Pressure</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="unit-toggle">
+            <button class="unit-btn active" data-unit="celsius">°C</button>
+            <button class="unit-btn" data-unit="fahrenheit">°F</button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
