@@ -2,6 +2,9 @@ const axios = require('axios');
 
 class WeatherService {
   constructor(apiKey) {
+    if (!apiKey) {
+      throw new Error('API key is required');
+    }
     this.apiKey = apiKey;
     this.baseUrl = 'https://api.openweathermap.org/data/2.5';
   }
@@ -15,6 +18,7 @@ class WeatherService {
           units: 'metric'
         }
       });
+      
       return {
         success: true,
         data: {
@@ -27,6 +31,7 @@ class WeatherService {
         }
       };
     } catch (error) {
+      console.error('WeatherService error:', error.response?.data || error.message);
       return {
         success: false,
         message: error.response?.data?.message || 'Weather fetch failed'

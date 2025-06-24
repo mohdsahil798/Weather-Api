@@ -1,124 +1,85 @@
 require('dotenv').config();
 const express = require('express');
-const WebSocket = require('ws');
-const cron = require('node-cron');
-const WeatherService = require('./weatherService');
+const axios = require('axios');
 const cors = require('cors');
-const http = require('http');
 
 const app = express();
-const PORT = process.env.PORT || 10000; // Use Render's port
-const weatherService = new WeatherService(process.env.OPENWEATHER_API_KEY);
+const PORT = process.env.PORT || 10000;
 
-// Enhanced CORS configuration
-app.use(cors({
-  origin: [
-    'https://your-netlify-app.netlify.app', // Your live frontend
-    'http://localhost:5500' // Local development
-  ],
-  methods: ['GET', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
-  credentials: true
-}));
+// Verify API Key
+const API_KEY = process.env.OPENWEATHER_API_KEY;
+if (!API_KEY) {
+  console.error('FATAL ERROR: OPENWEATHER_API_KEY not set!');
+  process.exit(1);
+} else {
+  console.log('Weather API Key Verified');
+}
 
-// Create HTTP server explicitly
-const server = http.createServer(app);
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-// WebSocket Server
-const wss = new WebSocket.Server({ 
-  noServer: true,
-  clientTracking: true // Track connected clients
+// Health endpoint
+app.get('/health', (req, res) => {
+  console.log('Health check request received');
+  res.json({ 
+    status: 'ok',
+    message: 'Service is healthy',
+    timestamp: new Date().toISOString()
+  });
 });
 
-const clients = new Map();
-
-// Handle HTTP server upgrade
-server.on('upgrade', (request, socket, head) => {
-  console.log('Received upgrade request');
+// Weather endpoint
+app.get('/weather', async (req, res) => {
+  const location = req.query.location;
+  console.log(`Weather request received for: ${location}`);
   
-  try {
-    const url = new URL(request.url, `http://${request.headers.host}`);
-    const location = url.searchParams.get('location');
-    
-    console.log(`Upgrade request for location: ${location}`);
-    
-    if (!location || location.trim().length < 2) {
-      console.log('Invalid location, destroying socket');
-      socket.write('HTTP/1.1 400 Bad Request\r\n\r\n');
-      socket.destroy();
-      return;
-    }
+  if (!location) {
+    return res.status(400).json({ error: 'Missing location parameter' });
+  }
 
-    wss.handleUpgrade(request, socket, head, (ws) => {
-      wss.emit('connection', ws, location.trim());
+  try {
+    const response = await axios.get('https://api.openweathermap.org/data/2.5/weather', {
+      params: {
+        q: location,
+        appid: API_KEY,
+        units: 'metric'
+      },
+      timeout: 5000
+    });
+
+    res.json({
+      location: response.data.name,
+      temp: response.data.main.temp,
+      humidity: response.data.main.humidity,
+      description: response.data.weather[0].description,
+      icon: response.data.weather[0].icon
     });
   } catch (error) {
-    console.error('Upgrade error:', error);
-    socket.destroy();
+    console.error('Weather API error:', error.response?.data || error.message);
+    res.status(500).json({
+      error: 'Failed to fetch weather data',
+      details: error.response?.data?.message || error.message
+    });
   }
 });
 
-wss.on('connection', (ws, location) => {
-  console.log(`New client connected for ${location}`);
-  clients.set(ws, location);
-
-  // Send initial data
-  weatherService.getWeather(location)
-    .then(data => {
-      ws.send(JSON.stringify(data));
-      console.log(`Initial data sent for ${location}`);
-    })
-    .catch(error => {
-      console.error(`Error getting weather for ${location}:`, error);
-      ws.send(JSON.stringify({
-        success: false,
-        message: 'Error fetching weather data'
-      }));
-    });
-
-  ws.on('message', (message) => {
-    console.log(`Received message from ${location}: ${message}`);
-  });
-
-  ws.on('error', (error) => {
-    console.error(`WebSocket error for ${location}:`, error);
-  });
-
-  ws.on('close', () => {
-    console.log(`Client disconnected for ${location}`);
-    clients.delete(ws);
-  });
+// Root endpoint
+app.get('/', (req, res) => {
+  res.send(`
+    <h1>Weather Backend Service</h1>
+    <p>Service is running properly</p>
+    <ul>
+      <li><a href="/health">Health Check</a></li>
+      <li><a href="/weather?location=London">Example Weather Request</a></li>
+    </ul>
+  `);
 });
 
-// Scheduled updates
-cron.schedule('*/2 * * * *', () => {
-  console.log(`Running scheduled update for ${clients.size} clients`);
-  
-  clients.forEach((location, ws) => {
-    if (ws.readyState === WebSocket.OPEN) {
-      weatherService.getWeather(location)
-        .then(data => {
-          ws.send(JSON.stringify(data));
-          console.log(`Updated data sent for ${location}`);
-        })
-        .catch(error => {
-          console.error(`Update error for ${location}:`, error);
-        });
-    }
-  });
-});
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'ok',
-    clients: wss.clients.size,
-    uptime: process.uptime()
-  });
-});
-
-// Start the server
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`WebSocket server ready at ws://localhost:${PORT}`);
+// Start server
+app.listen(PORT, () => {
+  console.log(`\n🚀 Server running on port ${PORT}`);
+  console.log(`🌤️  Weather endpoint: http://localhost:${PORT}/weather?location=London`);
+  console.log(`❤️  Health check: http://localhost:${PORT}/health`);
+  console.log(`🏠 Home: http://localhost:${PORT}\n`);
 });
