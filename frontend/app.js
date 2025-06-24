@@ -25,7 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Establish new WebSocket connection
     websocket = new WebSocket(
-      `ws://localhost:3000?location=${encodeURIComponent(location)}`
+      `wss://weather-backend.onrender.com?location=${encodeURIComponent(
+        location
+      )}`
     );
 
     websocket.onopen = () => {
