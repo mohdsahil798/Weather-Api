@@ -1,0 +1,400 @@
+/* ===== Base Styles & Variables ===== */
+:root {
+  /* Color palette */
+  --primary-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  --secondary-gradient: linear-gradient(to right, #ff6b6b, #ff8e53);
+  --card-bg: rgba(0, 0, 0, 0.7);
+  --card-hover: rgba(255, 255, 255, 0.1);
+  --text-light: #ffffff;
+  --text-dim: rgba(255, 255, 255, 0.8);
+  --error-color: #ff6b6b;
+  
+  /* Typography */
+  --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-heading: 'Montserrat', sans-serif;
+  
+  /* Spacing */
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  
+  /* Shadows */
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.3);
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.4s ease;
+}
+
+/* ===== Global Styles ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-main);
+  background: var(--primary-gradient);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-md);
+  color: var(--text-light);
+  line-height: 1.6;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+/* Add Montserrat for headings */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap');
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+/* ===== Main Container ===== */
+.container {
+  background: var(--card-bg);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  padding: var(--space-xl);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transition: transform var(--transition-medium);
+}
+
+.container:hover {
+  transform: translateY(-5px);
+}
+
+/* ===== Search Section ===== */
+.search-container {
+  margin: var(--space-xl) 0;
+  display: flex;
+  gap: var(--space-md);
+  position: relative;
+}
+
+#location-input {
+  flex: 1;
+  padding: var(--space-md) var(--space-lg);
+  border-radius: 50px;
+  border: none;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-main);
+}
+
+#location-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3);
+  transform: scale(1.02);
+}
+
+#connect-btn {
+  padding: var(--space-md) var(--space-lg);
+  border-radius: 50px;
+  border: none;
+  background: var(--secondary-gradient);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-main);
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+#connect-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 15px rgba(255, 107, 107, 0.4);
+}
+
+#connect-btn:active {
+  transform: translateY(0);
+}
+
+#connect-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+#connect-btn:hover::after {
+  opacity: 1;
+}
+
+/* ===== Weather Card ===== */
+.weather-card {
+  background: var(--card-hover);
+  border-radius: 15px;
+  padding: var(--space-xl);
+  margin-top: var(--space-lg);
+  transition: all var(--transition-medium);
+  animation: fadeIn 0.8s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.weather-card.hidden {
+  display: none;
+}
+
+.location {
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.location i {
+  font-size: 1.5rem;
+}
+
+.temp-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-lg);
+  margin: var(--space-lg) 0;
+  flex-wrap: wrap;
+}
+
+.temperature {
+  font-size: 3rem;
+  font-weight: bold;
+  position: relative;
+}
+
+.temperature::after {
+  content: '°C';
+  font-size: 1.5rem;
+  position: absolute;
+  top: 0;
+  right: -1.2rem;
+}
+
+.description {
+  font-size: 1.4rem;
+  margin-bottom: var(--space-md);
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.humidity {
+  font-size: 1.1rem;
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.additional-info {
+  display: flex;
+  justify-content: space-around;
+  margin: var(--space-lg) 0;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+}
+
+.info-value {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: var(--space-sm);
+}
+
+.info-label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.update-time {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-top: var(--space-sm);
+}
+
+#weather-icon {
+  width: 100px;
+  height: 100px;
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
+  transition: transform 0.5s ease;
+}
+
+#weather-icon:hover {
+  transform: scale(1.1);
+}
+
+/* ===== Error Message ===== */
+#error-message {
+  color: var(--error-color);
+  margin-top: var(--space-lg);
+  padding: var(--space-md);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+.hidden {
+  display: none;
+}
+
+/* ===== Loading Spinner ===== */
+.loader {
+  display: none;
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 5px solid #fff;
+  animation: spin 1s linear infinite;
+  margin: var(--space-lg) auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+  .container {
+    padding: var(--space-lg);
+    max-width: 95%;
+  }
+  
+  .search-container {
+    flex-direction: column;
+  }
+  
+  #connect-btn {
+    width: 100%;
+  }
+  
+  .weather-card {
+    padding: var(--space-lg);
+  }
+  
+  .temperature {
+    font-size: 2.5rem;
+  }
+  
+  .description {
+    font-size: 1.2rem;
+  }
+  
+  #weather-icon {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --space-lg: 1rem;
+    --space-xl: 1.5rem;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  .location {
+    font-size: 1.5rem;
+  }
+  
+  .temperature {
+    font-size: 2rem;
+  }
+  
+  .description {
+    font-size: 1.1rem;
+  }
+  
+  .additional-info {
+    gap: var(--space-sm);
+  }
+  
+  .info-item {
+    min-width: 70px;
+  }
+}
+
+/* ===== Weather Backgrounds ===== */
+.clear-sky {
+  background: linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%);
+}
+
+.few-clouds {
+  background: linear-gradient(135deg, #83a4d4 0%, #b6fbff 100%);
+}
+
+.scattered-clouds {
+  background: linear-gradient(135deg, #BBD2C5 0%, #536976 100%);
+}
+
+.broken-clouds {
+  background: linear-gradient(135deg, #4B79A1 0%, #283E51 100%);
+}
+
+.shower-rain {
+  background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+}
+
+.rain {
+  background: linear-gradient(135deg, #0F2027 0%, #203A43 100%);
+}
+
+.thunderstorm {
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
+}
+
+.snow {
+  background: linear-gradient(135deg, #E6DADA 0%, #274046 100%);
+}
+
+.mist {
+  background: linear-gradient(135deg, #606c88 0%, #3f4c6b 100%);
+}
