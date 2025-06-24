@@ -3,10 +3,12 @@ const express = require('express');
 const WebSocket = require('ws');
 const cron = require('node-cron');
 const WeatherService = require('./weatherService');
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const weatherService = new WeatherService(process.env.OPENWEATHER_API_KEY);
+app.use(cors()); 
 
 // WebSocket Server
 const wss = new WebSocket.Server({ noServer: true });
